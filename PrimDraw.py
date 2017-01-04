@@ -11,7 +11,7 @@ def teleport_and_draw(x,y, noActionAppend = False):
     color = pen.color()
     if not noActionAppend:
         actions.append(((x, y), weight, color[0], True))
-    print(color)
+    print('DRAWTO ' + str(x) + ', ' + str(y) + '. COLOR: ' + color[0] + '. WEIGHT: ' + str(weight))
     pen.goto(x,y)
 
 
@@ -112,6 +112,10 @@ def updateColor(choice):
     elif choice == 'Custom':
         changeToCustom()
 
+def updateCnvsColor():
+    global clrEntryVar
+    wn.bgcolor(clrEntryVar.get())
+
 def undo():
     lastIndex = len(actions) - 1
     undidActions.append(actions[lastIndex])
@@ -145,6 +149,7 @@ def redo():
 
 # set up tk window
 root = tk.Tk()
+root.title('')
 root.geometry('175x500')
 frame = tk.Frame()
 frame.grid()
@@ -153,6 +158,7 @@ sizePen.set(2)
 
 # turtle window & pen
 wn = turtle.Screen()
+wn.title('PrimDraw')
 pen = turtle.Turtle()
 pen.pensize(sizePen.get())
 pen.speed(10)
@@ -160,20 +166,32 @@ wn.colormode(255)
 
 
 
-#setup control buttons
+###setup control buttons###
 colourOptions = ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Black', 'Brown', 'Custom']
+
+#pensize control
 pensizeLabel = tk.Label(text = 'Stroke Weight', font = ('Arial', 10, 'bold')).grid(row = 0, column = 0)
 enterPenSize = tk.Entry(textvariable = sizePen, width = 7).grid(row = 1, column = 0)
 updatePenSize = tk.Button(text = 'Set', command = updatePen, relief = 'groove', width = 7).grid(row = 1, column = 1)
-colorMenuLabel = tk.Label(text = 'Colors').grid(row = 2, column = 0)
 
+#color control
+colorMenuLabel = tk.Label(text = 'Colors', font = ('Arial', 10, 'bold')).grid(row = 2, column = 0)
 defaultOption = tk.StringVar()
 defaultOption.set(colourOptions[6])
 colorMenu = tk.OptionMenu(root, defaultOption, *colourOptions, command = updateColor).grid(row = 3, column = 0)
 
-undoRedoLabel = tk.Label(text = 'Undo/Redo').grid(row = 4, column = 0)
+#undo&redo
+undoRedoLabel = tk.Label(text = 'Undo/Redo', font = ('Arial', 10, 'bold')).grid(row = 4, column = 0)
 undoButton = tk.Button(text = 'Undo', command = undo).grid(row = 5, column = 0)
 redoButton = tk.Button(text = 'Redo', command = redo).grid(row = 5, column = 1)
+
+#canvas colour set
+canvasColorLabel = tk.Label(text = 'Canvas Colour', font = ('Arial', 10, 'bold')).grid(row = 6, column = 0)
+clrEntryVar = tk.StringVar()
+clrEntryVar.set('white')
+colourEntry = tk.Entry(textvariable = clrEntryVar, width = 7).grid(row = 7, column = 0)
+updateCnvsColorB = tk.Button(text = 'Set', command = updateCnvsColor).grid(row = 7, column = 1)
+
 
 # listeners to teleport
 wn.onclick(teleport_and_draw,1)    # left click
