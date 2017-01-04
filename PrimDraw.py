@@ -6,7 +6,7 @@ undidActions = []
 actions = []
 
 
-def teleport_and_draw(x,y, noActionAppend = False):
+def draw(x,y, noActionAppend = False):
     weight = pen.pensize()
     color = pen.color()
     if not noActionAppend:
@@ -15,7 +15,7 @@ def teleport_and_draw(x,y, noActionAppend = False):
     pen.goto(x,y)
 
 
-def teleport_and_no_draw(x,y, noActionAppend = False):
+def teleport(x,y, noActionAppend = False):
     weight = pen.pensize()
     color = pen.color()
     if not noActionAppend:
@@ -132,11 +132,11 @@ def redo():
     if action[3]:
         pen.color(action[2])
         pen.pensize(action[1])
-        teleport_and_draw(action[0][0], action[0][1], True)
+        draw(action[0][0], action[0][1], True)
     elif not action[3]:
         pen.color(action[2])
         pen.pensize(action[1])
-        teleport_and_no_draw(action[0][0], action[0][1], True)
+        teleport(action[0][0], action[0][1], True)
     undidActions.remove(action)
     actions.append(action)
     print('=====REDO=====')
@@ -182,20 +182,20 @@ colorMenu = tk.OptionMenu(root, defaultOption, *colourOptions, command = updateC
 
 #undo&redo
 undoRedoLabel = tk.Label(text = 'Undo/Redo', font = ('Arial', 10, 'bold')).grid(row = 4, column = 0)
-undoButton = tk.Button(text = 'Undo', command = undo).grid(row = 5, column = 0)
-redoButton = tk.Button(text = 'Redo', command = redo).grid(row = 5, column = 1)
+undoButton = tk.Button(text = 'Undo', command = undo, width = 7, relief = 'groove').grid(row = 5, column = 0)
+redoButton = tk.Button(text = 'Redo', command = redo, width = 7, relief = 'groove').grid(row = 5, column = 1)
 
 #canvas colour set
 canvasColorLabel = tk.Label(text = 'Canvas Colour', font = ('Arial', 10, 'bold')).grid(row = 6, column = 0)
 clrEntryVar = tk.StringVar()
 clrEntryVar.set('white')
 colourEntry = tk.Entry(textvariable = clrEntryVar, width = 7).grid(row = 7, column = 0)
-updateCnvsColorB = tk.Button(text = 'Set', command = updateCnvsColor).grid(row = 7, column = 1)
+updateCnvsColorB = tk.Button(text = 'Set', command = updateCnvsColor, width = 7, relief = 'groove').grid(row = 7, column = 1)
 
 
 # listeners to teleport
-wn.onclick(teleport_and_draw,1)    # left click
-wn.onclick(teleport_and_no_draw,3) # right click
+wn.onclick(draw,1)    # left click
+wn.onclick(teleport,3) # right click
 
 # listeners to change colour by keyboard
 wn.onkey(changeToRed, 1)
