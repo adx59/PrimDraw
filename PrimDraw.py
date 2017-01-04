@@ -1,3 +1,10 @@
+#!/usr/bin/env python
+
+"""A simple drawing app that only uses straight lines. It's that horrible."""
+
+__author__ = 'Adam Xu(AZX)'
+__credits__ = ['Adam Xu']
+
 import turtle
 import os
 import tkinter as tk
@@ -5,13 +12,61 @@ customSet = (False, (0, 0, 0))
 undidActions = []
 actions = []
 
+def readScrptLine(line):
+    lineArgs = line.split()
+    if lineArgs[0] == 'd':
+        pen.color(lineArgs[3])
+        sizePen.set(int(lineArgs[4]))
+        updatePen()
+        draw(int(lineArgs[1]), int(lineArgs[2]))
+    elif lineArgs[0] == 't':
+        pen.color(lineArgs[3])
+        sizePen.set(int(lineArgs[4]))
+        updatePen()
+        teleport(int(lineArgs[1]), int(lineArgs[2]))
+    elif lineArgs[0] == 'sc':
+        if lineArgs[1] == 'brown':
+            wn.bgcolor((102, 51, 0))
+        else:
+            wn.bgcolor(lineArgs[1])
+
+def readScript():
+    """opens a .pdrs file with pdrs actions in it
+        executes actions"""
+    filename = scrptName.get()
+    if os.path.isfile(filename):
+        wn.reset()
+        pen.speed(10)
+        f = open(filename, 'r')
+        for line in f:
+            readScrptLine(line.strip())
+
+def exportAsScript():
+    """takes all actions from the actions list
+        exports them as pdrs actions into a file"""
+    filename = expEntry.get()
+    expf = open(filename, 'w')
+    for entry in actions:
+        ln = ''
+        if entry[3]:
+            ln += 'd '
+        else:
+            ln += 't '
+        ln += str(int(entry[0][0])) + ' '
+        ln += str(int(entry[0][1])) + ' '
+        ln += str(entry[2]) + ' '
+        ln += str(entry[1])
+        ln += '\n'
+        print(ln)
+        expf.write(ln)
+
 
 def draw(x,y, noActionAppend = False):
     weight = pen.pensize()
     color = pen.color()
     if not noActionAppend:
         actions.append(((x, y), weight, color[0], True))
-    print('DRAWTO ' + str(x) + ', ' + str(y) + '. COLOR: ' + color[0] + '. WEIGHT: ' + str(weight))
+    print('DRAWTO ' + str(x) + ', ' + str(y) + '. COLOR: ' + str(color[0]) + '. WEIGHT: ' + str(weight))
     pen.goto(x,y)
 
 
@@ -73,7 +128,7 @@ def changeToBlack():
     pen.color('black')
 
 def changeToBrown():
-    pen.color('brown')
+    pen.color((102, 51, 0))
     
 
 def penSizeUp():
@@ -114,6 +169,8 @@ def updateColor(choice):
 
 def updateCnvsColor():
     global clrEntryVar
+    if clrEntryVar.get() == 'brown':
+        wn.bgcolor((102, 51, 0))
     wn.bgcolor(clrEntryVar.get())
 
 def undo():
@@ -165,7 +222,6 @@ pen.speed(10)
 wn.colormode(255)
 
 
-
 ###setup control buttons###
 colourOptions = ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Black', 'Brown', 'Custom']
 
@@ -192,6 +248,19 @@ clrEntryVar.set('white')
 colourEntry = tk.Entry(textvariable = clrEntryVar, width = 7).grid(row = 7, column = 0)
 updateCnvsColorB = tk.Button(text = 'Set', command = updateCnvsColor, width = 7, relief = 'groove').grid(row = 7, column = 1)
 
+#import PrimDraw Script
+importScrptLabel = tk.Label(text = 'Import PDScript', font = ('Arial', 10, 'bold')).grid(row = 8, column = 0)
+scrptName = tk.StringVar()
+scrptName.set('')
+importScrptEntry = tk.Entry(textvariable = scrptName, width = 10).grid(row = 9, column = 0)
+importScrptB = tk.Button(text = 'Import', command = readScript, width = 7, relief = 'groove').grid(row = 9, column = 1)
+
+#export as PrimDraw Script
+exportAsScriptLbl = tk.Label(text = 'Export PDScript', font = ('Arial', 10, 'bold')).grid(row = 10, column = 0)
+expEntry = tk.StringVar()
+expEntry.set('')
+exportEntry = tk.Entry(textvariable = expEntry, width = 10).grid(row = 11, column = 0)
+exportScrptB = tk.Button(text = 'Export', command = exportAsScript, width = 7, relief = 'groove').grid(row = 11, column = 1)
 
 # listeners to teleport
 wn.onclick(draw,1)    # left click
