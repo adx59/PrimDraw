@@ -249,14 +249,14 @@ colourEntry = tk.Entry(textvariable = clrEntryVar, width = 7).grid(row = 7, colu
 updateCnvsColorB = tk.Button(text = 'Set', command = updateCnvsColor, width = 7, relief = 'groove').grid(row = 7, column = 1)
 
 #import PrimDraw Script
-importScrptLabel = tk.Label(text = 'Import PDScript', font = ('Arial', 10, 'bold')).grid(row = 8, column = 0)
+importScrptLabel = tk.Label(text = 'Import PDRS', font = ('Arial', 10, 'bold')).grid(row = 8, column = 0)
 scrptName = tk.StringVar()
 scrptName.set('')
 importScrptEntry = tk.Entry(textvariable = scrptName, width = 10).grid(row = 9, column = 0)
 importScrptB = tk.Button(text = 'Import', command = readScript, width = 7, relief = 'groove').grid(row = 9, column = 1)
 
 #export as PrimDraw Script
-exportAsScriptLbl = tk.Label(text = 'Export PDScript', font = ('Arial', 10, 'bold')).grid(row = 10, column = 0)
+exportAsScriptLbl = tk.Label(text = 'Export PDRS', font = ('Arial', 10, 'bold')).grid(row = 10, column = 0)
 expEntry = tk.StringVar()
 expEntry.set('')
 exportEntry = tk.Entry(textvariable = expEntry, width = 10).grid(row = 11, column = 0)
