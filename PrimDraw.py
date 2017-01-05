@@ -15,7 +15,7 @@ actions = []
 def readScrptLine(line):
     lineArgs = line.split()
     if lineArgs[0] == 'd':
-        pen.color(lineArgs[3])
+        pen.color(eval(lineArgs[3]) if lineArgs[3][0] == '(' else lineArgs[3])
         sizePen.set(int(lineArgs[4]))
         updatePen()
         draw(int(lineArgs[1]), int(lineArgs[2]))
@@ -25,10 +25,7 @@ def readScrptLine(line):
         updatePen()
         teleport(int(lineArgs[1]), int(lineArgs[2]))
     elif lineArgs[0] == 'sc':
-        if lineArgs[1] == 'brown':
-            wn.bgcolor((102, 51, 0))
-        else:
-            wn.bgcolor(lineArgs[1])
+        wn.bgcolor(lineArgs[1])
 
 def readScript():
     """opens a .pdrs file with pdrs actions in it
@@ -59,22 +56,26 @@ def exportAsScript():
         ln += '\n'
         print(ln)
         expf.write(ln)
+    print('========\nExported!\n========')
 
 
-def draw(x,y, noActionAppend = False):
+def draw(x,y):
     weight = pen.pensize()
     color = pen.color()
-    if not noActionAppend:
-        actions.append(((x, y), weight, color[0], True))
+    if color[0][0] == '(':
+        clor = tuple([int(x) for x in color[0]])
+        clr = str(clor).replace(' ', '')
+    else:
+        clr = str(color[0])
+    actions.append(((x, y), weight, clr, True))
     print('DRAWTO ' + str(x) + ', ' + str(y) + '. COLOR: ' + str(color[0]) + '. WEIGHT: ' + str(weight))
     pen.goto(x,y)
 
 
-def teleport(x,y, noActionAppend = False):
+def teleport(x,y):
     weight = pen.pensize()
     color = pen.color()
-    if not noActionAppend:
-        actions.append(((x, y), weight, color[0], False))
+    actions.append(((x, y), weight, color[0], False))
     pen.penup()
     pen.goto(x,y)
     pen.pendown()
@@ -88,7 +89,6 @@ def changeToCustom():
         g = 0
         b = 0
         for line in f:
-            global r, g, b, ln
             if ln == 1:
                 r = int(line.strip())
             elif ln == 2:
@@ -128,7 +128,7 @@ def changeToBlack():
     pen.color('black')
 
 def changeToBrown():
-    pen.color((102, 51, 0))
+    pen.color('brown')
     
 
 def penSizeUp():
@@ -169,8 +169,6 @@ def updateColor(choice):
 
 def updateCnvsColor():
     global clrEntryVar
-    if clrEntryVar.get() == 'brown':
-        wn.bgcolor((102, 51, 0))
     wn.bgcolor(clrEntryVar.get())
 
 def undo():
@@ -187,11 +185,17 @@ def undo():
 def redo():
     action = undidActions[len(undidActions) - 1]
     if action[3]:
-        pen.color(action[2])
+        if len(action[2]) == 2:
+            pen.color(action[2][0])
+        else:
+            pen.color(action[2])
         pen.pensize(action[1])
         draw(action[0][0], action[0][1], True)
     elif not action[3]:
-        pen.color(action[2])
+        if len(action[2]) == 2:
+            pen.color(action[2][0])
+        else:
+            pen.color(action[2])
         pen.pensize(action[1])
         teleport(action[0][0], action[0][1], True)
     undidActions.remove(action)
