@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""A simple drawing app that only uses straight lines. It's that horrible. JK try importing boy.pdrs it's pretty good"""
+"""A simple drawing app that only uses straight lines. It's that horrible."""
 
 __author__ = 'Adam Xu(AZX)'
 __credits__ = ['Adam Xu']
@@ -15,13 +15,12 @@ actions = []
 def readScrptLine(line):
     lineArgs = line.split()
     if lineArgs[0] == 'd':
-        print(lineArgs[3])
         pen.color(eval(lineArgs[3]) if lineArgs[3][0] == '(' else lineArgs[3])
         sizePen.set(int(lineArgs[4]))
         updatePen()
         draw(int(lineArgs[1]), int(lineArgs[2]))
     elif lineArgs[0] == 't':
-        pen.color(eval(lineArgs[3]) if lineArgs[3][0] == '(' else lineArgs[3])
+        pen.color(lineArgs[3])
         sizePen.set(int(lineArgs[4]))
         updatePen()
         teleport(int(lineArgs[1]), int(lineArgs[2]))
@@ -35,6 +34,8 @@ def readScript():
     if os.path.isfile(filename):
         wn.reset()
         pen.speed(10)
+        actions = []
+        undidActions = []
         f = open(filename, 'r')
         for line in f:
             readScrptLine(line.strip())
@@ -63,7 +64,7 @@ def exportAsScript():
 def draw(x,y):
     weight = pen.pensize()
     color = pen.color()
-    if str(color[0])[0] == '(':
+    if color[0][0] == '(':
         clor = tuple([int(x) for x in color[0]])
         clr = str(clor).replace(' ', '')
     else:
@@ -76,12 +77,7 @@ def draw(x,y):
 def teleport(x,y):
     weight = pen.pensize()
     color = pen.color()
-    if str(color[0])[0] == '(':
-        clor = tuple([int(x) for x in color[0]])
-        clr = str(clor).replace(' ', '')
-    else:
-        clr = str(color[0])
-    actions.append(((x, y), weight, clr, False))
+    actions.append(((x, y), weight, color[0], False))
     pen.penup()
     pen.goto(x,y)
     pen.pendown()
@@ -109,8 +105,8 @@ def changeToCustom():
     elif customSet[0]:
         pen.color((customSet[1][0], customSet[1][1], customSet[1][2]))
     else:
-        print('No configuration file found')
-
+        print('No custom RGB configuration file found.\nMake sure that config file is in same dir as app')
+        
 
 def changeToRed():
     pen.color('red')
